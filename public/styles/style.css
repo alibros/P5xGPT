@@ -1,0 +1,143 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    line-height: 1.6;
+    background-color: color(srgb 0.098 0.098 0.0981);
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 2rem 0;
+    padding-top: 1rem;
+    color: color(display-p3 0.302 0.6667 0.9098);
+  }
+
+  #prompt-form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  #prompt {
+    width: 300px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+  }
+
+  #prompt-form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  #prompt-form button:hover {
+    background-color: #45a049;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+
+  #p5canvas {
+    position: absolute;
+    top: 280px;
+    left: 0%;
+    width: 600px;
+    height: 600px;
+    margin-left: 40px;
+    border: none;
+    background-color: darkslategrey;
+  }
+  
+  #loading-spinner {
+    display: none;
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    margin-left: -40px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  #editor {
+    width: 600px;
+    height: 600px;
+    position: absolute;
+    display: block;
+    top: 280px;
+    left: 0%;
+    margin-left: 660px;
+  }
+
+  #code {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  #save-button {
+    position: absolute;
+    bottom: 0;
+    right:  0;
+    margin-bottom: 4px;
+    width: 11%;
+    height: 5%;
+    margin-right: 2px;
+    z-index: 2;
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.2rem 0.3rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+
+@media only screen and (min-width: 1200px) {
+    #p5canvas {
+      left: 50%;
+      margin-left: -620px;
+    }
+    #editor {
+      left: 50%;
+      margin-left: -20px;
+    }
+}
+  
+@media only screen and (max-width: 1199px) {
+    #p5canvas,
+    #editor {
+      position: relative;
+      margin-left: auto;
+      margin-right: auto;
+      left: auto;
+      top: auto;
+    }
+    #editor {
+      margin-top: 20px;
+    }
+}
+  
