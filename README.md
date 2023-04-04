@@ -5,4 +5,4 @@ Generate p5.js code using GPT3.5
 - and your OpenAI API key in a .env file
 - run `npm install` and `node app.js`
 
-![alt text](sample-image.png)
+![alt text](sample-photo.png)
