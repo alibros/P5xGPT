@@ -28,8 +28,11 @@
     <form id="prompt-form">
         <input type="text" id="prompt" placeholder="Enter p5.js idea" required>
         <button type="submit">Generate Canvas</button>
-        <input type="checkbox" id="send-code-checkbox" name="send-code" value="send-code">
-        <label for="send-code-checkbox">Keep context</label>
+        <label for="clean-context-checkbox">
+            <input type="checkbox" id="clean-context-checkbox" name="send-code" value="send-code">
+            New context
+        </label>
+        
     </form>
 
     <div id="p5canvas"></div>

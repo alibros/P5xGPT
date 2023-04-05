@@ -1,6 +1,6 @@
 const p5Form = document.getElementById('prompt-form');
 const loadingSpinner = document.getElementById('loading-spinner');
-const sendCodeCheckbox = document.getElementById('send-code-checkbox');
+const cleanContextCheckbox = document.getElementById('clean-context-checkbox');
 const codeeditor = ace.edit('code');
 
 p5Form.addEventListener('submit', async (event) => {
@@ -10,10 +10,10 @@ p5Form.addEventListener('submit', async (event) => {
 
   const requestData = { 
     prompt: prompt,
-    context: sendCodeCheckbox.checked 
+    context: !cleanContextCheckbox.checked 
   };
 
-  if (sendCodeCheckbox.checked) {
+  if (!cleanContextCheckbox.checked) {
     requestData.code = codeContent;
   }
 

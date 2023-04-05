@@ -53,9 +53,11 @@
   #prompt-form label {
     display: inline-block;
     margin-left: 1rem;
+    margin-top: 0.5rem;
     font-size: 1rem;
     cursor: pointer;
     vertical-align: middle;
+    color: #aaa;
   }
 
   #prompt-form button:hover {
