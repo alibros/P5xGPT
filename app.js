@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
+// Remove the path if you are using .env file in the root directory and use require('dotenv').config();
 require('dotenv').config({ path: '.env.local' });
 const port = process.env.PORT || 3000;
 const fs = require('fs');
@@ -20,6 +21,9 @@ if i's a game, it should be easy to play and fun to play. not very fast, and aft
 ONLY GIVE ME CODE. NO OTHER TYPES OF TEXT. pure validated javascript and nothing else
 do not include any comments or explantions or anything else. just pure javascript code.
 canvas size is 600x600.
+
+The user might include some p5 code in the request, in which case consider the code and make modifications based on user's request.
+
 `;
 
 //Main endpoint
@@ -34,15 +38,23 @@ app.listen(port, () => {
 
 // End Point to generate P5 Code from GPT
 app.post('/generate-p5code', async (req, res) => {
-    const prompt = req.body.prompt;
+    const { prompt, context, code } = req.body;
     console.log(prompt);
+    console.log(context);
+    var requestPrompt = prompt;
+    if (context) {
+      console.log(code);
+      requestPrompt = 'here is a p5js code, modify it to do this:'+prompt + '\n' + code;  
+
+    }
+    console.log(requestPrompt);
   
     console.log(process.env.OPENAI_API_KEY);
 
     const data = {
       model: 'gpt-3.5-turbo',
       messages: [{ role: 'system', content: p5jsprompt },
-          { role: 'user', content: prompt }],
+          { role: 'user', content: requestPrompt }],
     };
 
     try {

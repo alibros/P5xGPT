@@ -18,6 +18,7 @@ editor.commands.addCommand({
   exec: function(editor) {
     // Get the modified code
     var code = editor.getValue();
+    console.log("code to save:", code)
     // Send the code to the server using fetch()
     fetch('/update-p5code', {
       method: 'POST',

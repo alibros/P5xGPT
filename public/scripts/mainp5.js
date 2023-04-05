@@ -1,16 +1,28 @@
 const p5Form = document.getElementById('prompt-form');
 const loadingSpinner = document.getElementById('loading-spinner');
+const sendCodeCheckbox = document.getElementById('send-code-checkbox');
+const codeeditor = ace.edit('code');
 
 p5Form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const prompt = document.getElementById('prompt').value;
+  const codeContent = codeeditor.getValue();
+
+  const requestData = { 
+    prompt: prompt,
+    context: sendCodeCheckbox.checked 
+  };
+
+  if (sendCodeCheckbox.checked) {
+    requestData.code = codeContent;
+  }
 
   try {
     loadingSpinner.style.display = 'block';
     const response = await fetch('/generate-p5code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify(requestData),
     });
 
     if (response.ok) {

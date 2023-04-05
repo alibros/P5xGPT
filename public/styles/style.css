@@ -50,6 +50,14 @@
     transition: all 0.3s ease;
   }
 
+  #prompt-form label {
+    display: inline-block;
+    margin-left: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+
   #prompt-form button:hover {
     background-color: #45a049;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
