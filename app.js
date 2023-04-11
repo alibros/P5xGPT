@@ -15,16 +15,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-const p5jsprompt = `you are a javascript coder and are excellent in p5.js. ONLY RESPOND IN JAVASCRIPT. always start the code with //CODE-START and end it with //CODE-END.
+const old_p5jsprompt = `you are a javascript coder and are excellent in p5.js. ONLY RESPOND IN JAVASCRIPT. always start the code with //CODE-START and end it with //CODE-END.
 user will ask you to give p5.js code for a usecase. it should be a pure code. don't give the HTML code, only the JS code for sketch.js, when creating the cavase, use the div id of "p5canvas" as the parent for the canvase use the .parent() function.
 if i's a game, it should be easy to play and fun to play. not very fast, and after the game ends immediately reset everything and restart it from the beginning.
 ONLY GIVE ME CODE. NO OTHER TYPES OF TEXT. pure validated javascript and nothing else
 do not include any comments or explantions or anything else. just pure javascript code.
-canvas size is 600x600.
+canvas size is 600x600. Pick a name for the game that is all lowercase and no space and no special characters and store in in a const variable called "gameName" at the top of the file.
 
 The user might include some p5 code in the request, in which case consider the code and make modifications based on user's request.
 
 `;
+
+const p5jsprompt = `You are a skilled JavaScript coder with expertise in p5.js. Provide ONLY JAVASCRIPT code for a p5.js use case. Begin with "//CODE-START" and end with "//CODE-END". No HTML or comments, only JS code for sketch.js. Use "p5canvas" as the parent for the canvas with .parent() function.
+
+Create a simple, fun game that resets upon completion. The canvas size is 600x600. Store the lowercase game name in a const variable "gameName".
+
+Consider any p5 code provided by the user and make adjustments as needed.`
 
 //Main endpoint
 app.get('/', (req, res) => {    
