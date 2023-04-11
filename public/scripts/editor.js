@@ -27,6 +27,9 @@ fetch('/scripts/sketch.js')
     editor.setValue(text, -1);
     var gameNameDisplay = document.getElementById("game-name-display");
     gameNameDisplay.textContent = `${getGameName(text)}`;
+
+    var gameInstructionsDisplay = document.getElementById("game-instructions");
+    gameInstructionsDisplay.textContent = `${getGameInstructions(text)}`;
 })
 .catch(error => {
     console.error('Error fetching the file:', error);
@@ -114,6 +117,19 @@ editor.commands.addCommand({
     if (match && match[1]) {
       return match[1];
     } else {
-      return null;
+      return "";
+    }
+  }
+
+
+
+  function getGameInstructions(code) {
+    const gameNameRegex = /(?:const|let|var)\s+gameInstructions\s*=\s*['"]([^'"]+)['"]/;
+    const match = code.match(gameNameRegex);
+  
+    if (match && match[1]) {
+      return match[1];
+    } else {
+      return "";
     }
   }

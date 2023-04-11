@@ -64,9 +64,15 @@
     text-align: center;
     font-size: 1.2rem;
     color: #fff;
-    margin-bottom: 1rem;
+    margin-bottom: 0.1rem;
   }
   
+  #game-instructions {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 20px;
+  }
 
   #prompt-form button:hover {
     background-color: #45a049;
