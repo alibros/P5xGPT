@@ -1,218 +1,126 @@
-const gameName="Flappy Bird"
+//declare gameName variable with a value 
+const gameName = 'Tic Tac Toe 2'; 
 
+//initialize `grid` array of arrays 
+let grid = Array(3).fill(0).map(x => Array(3).fill(''));
 
-let birdImage;
-let bird, pipes = [];
-let cloud = [];
-let mountain = [];
-let score = 0, highscore = 0;
+//initialize the `player` array with values 
+let players = ['X', 'O'];
 
-// load bird image from local filesystem
-function preload() {
-    birdImage = loadImage('../images/bird.png');
-}
+//initialize `currentPlayer` and `gameOver` as empty string and false respectively 
+let currentPlayer = '';
+let gameOver = false;
+let resultText = '';
 
 function setup() {
-    let canvas = createCanvas(600, 600);
-    canvas.parent('p5canvas'); // using "p5canvas" div as parent
-    
-    for (let i = 0; i < 4; i++) {
-        cloud[i] = {
-            x: random(0, 600),
-            y: random(0, 200),
-            size: random(50, 100),
-            speed: random(0.1, 0.5)
-        };
-    }
+  createCanvas(600, 600).parent('p5canvas');
+  //add a mousePressed event and  function to the canvas to evaluate mouse clicks
+  mouseClicked = function(){
+    //if the game is over, reset variables to start a new game
+    if(gameOver) {
+      grid = Array(3).fill(0).map(x => Array(3).fill(''));
+      currentPlayer = players[Math.floor(Math.random()*players.length)];
+      gameOver = false;
+    }else if(!gameOver){
+      // Otherwise, handle valid clicks to fill cells in the grid array with `currentPlayer` values and switch players
+      let col;
+      let row;
 
-    for (let i = 0; i < 3; i++) {
-        mountain[i] = {
-            x: random(-200, 0),
-            y: 450 + i * 80,
-            size: 400 - (i*80),
-            speed: random(0.1, 0.5),
-        }
-    }
+      if(mouseX < width/3) col = 0;
+      else if(mouseX > width/3*2) col = 2;
+      else col = 1;
 
-    bird = new Bird();
-    pipes.push(new Pipe());
+      if(mouseY < height/3) row = 0;
+      else if(mouseY > height/3*2) row = 2;
+      else row = 1;
+
+      if(grid[row][col] === ''){
+        grid[row][col] = currentPlayer;
+        currentPlayer = players[1 - players.indexOf(currentPlayer)];
+      }
+    }
+  }
+
+  //initialize `currentPlayer` to random player from `players` array
+  currentPlayer = players[Math.floor(Math.random()*players.length)];
 }
 
 function draw() {
-    let color1 = color(0, 0, 0);
-    let color2 = color(200, 200, 200);
-    let lerpAmt = map(sin(frameCount / 100), -1, 1, 0, 1);
-    
-    background(lerpColor(color1, color2, lerpAmt));
+  background(220);
+  drawGrid();
+  drawPlayers();
+  checkWinner();
+  if(gameOver){
+    textSize(40);
+    textAlign(CENTER, CENTER);
+    text(resultText, width/2, height/2);
+  }
+}
 
-    // update and show clouds
-    for (let i = 0; i < cloud.length; i++) {
-        noStroke();
+function drawGrid(){
+  strokeWeight(4);
+  line(width/3, 0, width/3, height);
+  line(width/3*2, 0, width/3*2, height);
+  line(0, height/3, width, height/3);
+  line(0, height/3*2, width, height/3*2);
+}
+
+//draw the Xs and Os on the game grid
+function drawPlayers(){
+  textSize(60);
+  textAlign(CENTER, CENTER);
+  let offset = width/6;
+  for(let i=0; i<3; i++){
+    for(let j=0; j<3; j++){
+      let x = j*width/3 + offset;
+      let y = i*height/3 + offset;
+      if(grid[i][j] === players[0]){
+        fill(0);
+        text(grid[i][j], x, y);
+      } else if(grid[i][j] === players[1]){
         fill(255);
-        ellipse(cloud[i].x, cloud[i].y, cloud[i].size, cloud[i].size / 2);
-        cloud[i].x += cloud[i].speed;
-
-        if (cloud[i].x > width) {
-            cloud[i].x = -cloud[i].size;
-            cloud[i].y = random(0, 200);
-            cloud[i].size = random(50, 100);
-            cloud[i].speed = random(0.1, 0.5);
-        }
+        text(grid[i][j], x, y);
+      }
     }
-
-    //update and show mountains
-    for (let i = 0; i < mountain.length; i++) {
-        noStroke();
-        fill(150,150,150)
-        triangle(mountain[i].x, mountain[i].y - mountain[i].size,
-                 mountain[i].x + mountain[i].size/2, mountain[i].y,
-                 mountain[i].x + mountain[i].size, mountain[i].y - mountain[i].size)
-
-        mountain[i].x += mountain[i].speed;
-
-        if (mountain[i].x > width + mountain[i].size) {
-            mountain[i].x = -mountain[i].size;
-        }
-    }
-
-    // show grass
-    noStroke();
-    fill(0,200,0);
-    rect(0, 550, width, 50);
-    
-    //display score
-    fill('white')
-    textSize(32)
-    text(`Score: ${score}`, 10, 40)  
-    
-    //display highscore
-    fill('pink')
-    textSize(32)
-    text(`Highscore: ${highscore}`, 350, 40)  
-
-    // spawn pipes every 100 frames
-    if (frameCount % 100 === 0) {
-        pipes.push(new Pipe());
-    }
-
-    // update and show pipes
-    for (let i = pipes.length - 1; i >= 0; i--) {
-        pipes[i].update();
-        pipes[i].show();
-
-        // remove pipes if they go off screen
-        if (pipes[i].offscreen()) {
-            pipes.splice(i, 1);
-        }
-
-        // check for collision with bird
-        if (pipes[i].hits(bird)) {
-            console.log("game over");
-            resetGame();
-            break;
-        }
-        
-        //calculate score
-        if(pipes[i].bottomPipeHitsBird(bird)){
-            score++
-            highscore = max(highscore, score)
-        }
-        
-    }
-
-    // update and show bird
-    bird.update();
-    bird.show();
+  }
 }
 
-function keyPressed() {
-    // flap the bird on spacebar press
-    if (key === ' ') {
-        bird.up();
+//evaluate if players have won or if there's a tie game
+function checkWinner(){
+  for (let i = 0; i < 3; i++) {
+    if (grid[i][0] === grid[i][1] && grid[i][1] === grid[i][2]) {
+      if(grid[i][0] !== ''){
+        resultText = `${grid[i][0]} wins!`;
+        gameOver = true;
+        return;
+      }
     }
-}
-
-function Bird() {
-    this.x = 70;
-    this.y = height / 2;
-    this.velocity = 0;
-    this.gravity = 0.6;
-    this.lift = -10;
-    this.radius = 16;
-
-    this.show = function () {
-        imageMode(CENTER);
-        image(birdImage, this.x, this.y, birdImage.width / 20, birdImage.height / 20);
+    if (grid[0][i] === grid[1][i] && grid[1][i] === grid[2][i]) {
+      if(grid[0][i] !== ''){
+        resultText = `${grid[0][i]} wins!`;
+        gameOver = true;
+        return;
+      }
     }
-
-    this.up = function () {
-        this.velocity += this.lift;
+  }
+  if (grid[0][0] === grid[1][1] && grid[1][1] === grid[2][2]) {
+    if(grid[0][0] !== ''){
+      resultText = `${grid[0][0]} wins!`;
+      gameOver = true;
+      return;
     }
+  }
 
-    this.update = function () {
-        this.velocity += this.gravity;
-        this.y += this.velocity;
-        // keep bird within screen bounds
-        if (this.y > height - this.radius) {
-            this.y = height - this.radius;
-            this.velocity = 0;
-        } else if (this.y < this.radius) {
-            this.y = this.radius;
-            this.velocity = 0;
-        }
+  if (grid[0][2] === grid[1][1] && grid[1][1] === grid[2][0]) {
+    if(grid[0][2] !== ''){
+      resultText = `${grid[0][2]} wins!`;
+      gameOver = true;
+      return;
     }
-}
+  }
 
-function Pipe() {
-    this.gap = 150; // gap between the upper and lower pipes
-    this.top = random(this.gap + 20, height / 2);
-    this.bottom = height - this.top - this.gap; // keep the total height of pipes 600
-    this.x = width;
-    this.width = 30;
-    this.speed = 4;
-    // randomly generating RGB colors 
-    this.r = random(0, 255);
-    this.g = random(0, 255);
-    this.b = random(0, 255);
-
-    this.show = function () {
-        fill(this.r, this.g, this.b);
-        rect(this.x, 0, this.width, this.top); // update pipe height as top
-        rect(this.x, height - this.bottom, this.width, this.bottom); // update pipe height as bottom
-    }
-
-    this.update = function () {
-        this.x -= this.speed;
-    }
-
-    this.offscreen = function () {
-        return (this.x < -this.width);
-    }
-
-    this.hits = function (bird) {
-        if (bird.y - bird.radius < this.top || bird.y + bird.radius > height - this.bottom) {
-            if (bird.x + bird.radius > this.x && bird.x - bird.radius < this.x + this.width) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    //check collision with bottom pipe
-    this.bottomPipeHitsBird = function (bird) {
-        if (bird.x > this.x && bird.x < this.x + this.width) {
-            if (bird.y > height - this.bottom) {
-                return true;
-            }
-        }
-        return false;
-    }
-}
-
-function resetGame() {
-    bird = new Bird();
-    pipes = [];
-    score = 0
-
-    pipes.push(new Pipe());
+  if(grid.every(row => row.every(cell => cell !== ''))){
+    gameOver = true;
+    resultText = 'Game over';
+  }
 }

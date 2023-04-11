@@ -1,5 +1,24 @@
 var editor = ace.edit("code");
 editor.setTheme("ace/theme/monokai");
+
+document.addEventListener("DOMContentLoaded", function () {
+    let style = document.createElement("style");
+    style.type = "text/css";
+    style.textContent = `
+    .ace_scrollbar-v::-webkit-scrollbar,
+    .ace_scrollbar-h::-webkit-scrollbar {
+      background-color: transparent;
+    }
+    
+    .ace_scrollbar-v::-webkit-scrollbar-thumb,
+    .ace_scrollbar-h::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    `;
+    document.head.appendChild(style);
+  });
+
+
 editor.session.setMode("ace/mode/javascript");
 fetch('/scripts/sketch.js')
 .then(response => response.text())
