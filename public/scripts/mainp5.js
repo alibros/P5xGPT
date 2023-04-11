@@ -38,3 +38,41 @@ p5Form.addEventListener('submit', async (event) => {
     loadingSpinner.style.display = 'none';
   }
 });
+
+
+async function fetchSavedGames() {
+  try {
+    const response = await fetch('/list-saved-games');
+    const savedGames = await response.json();
+    const savedGamesList = document.getElementById('saved-games-list');
+    
+    savedGames.forEach((game) => {
+      const listItem = document.createElement('li');
+      listItem.textContent = game.slice(0, -3); // Remove the .js extension
+      listItem.addEventListener('click', () => loadGame(game));
+      savedGamesList.appendChild(listItem);
+    });
+  } catch (error) {
+    console.error('Error fetching saved games:', error);
+  }
+}
+
+async function loadGame(gameName) {
+  try {
+    const response = await fetch(`/savedgames/${gameName}`);
+    if (response.ok) {
+      const code = await response.text();
+      editor.setValue(code, -1);
+
+      // Programmatically click the "update" button after loading the saved game
+      const updateButton = document.getElementById("update-button");
+      updateButton.click();
+    } else {
+      console.error('Failed to load saved game.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+fetchSavedGames();

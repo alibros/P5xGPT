@@ -1,126 +1,96 @@
-//declare gameName variable with a value 
-const gameName = 'Tic Tac Toe'; 
+const gameName = "Worms";
 
-//initialize `grid` array of arrays 
-let grid = Array(3).fill(0).map(x => Array(3).fill(''));
-
-//initialize the `player` array with values 
-let players = ['X', 'O'];
-
-//initialize `currentPlayer` and `gameOver` as empty string and false respectively 
-let currentPlayer = '';
+let worms = [];
+let score = 0;
 let gameOver = false;
-let resultText = '';
 
 function setup() {
-  createCanvas(600, 600).parent('p5canvas');
-  //add a mousePressed event and  function to the canvas to evaluate mouse clicks
-  mouseClicked = function(){
-    //if the game is over, reset variables to start a new game
-    if(gameOver) {
-      grid = Array(3).fill(0).map(x => Array(3).fill(''));
-      currentPlayer = players[Math.floor(Math.random()*players.length)];
-      gameOver = false;
-    }else if(!gameOver){
-      // Otherwise, handle valid clicks to fill cells in the grid array with `currentPlayer` values and switch players
-      let col;
-      let row;
-
-      if(mouseX < width/3) col = 0;
-      else if(mouseX > width/3*2) col = 2;
-      else col = 1;
-
-      if(mouseY < height/3) row = 0;
-      else if(mouseY > height/3*2) row = 2;
-      else row = 1;
-
-      if(grid[row][col] === ''){
-        grid[row][col] = currentPlayer;
-        currentPlayer = players[1 - players.indexOf(currentPlayer)];
-      }
-    }
+  createCanvas(600, 600).parent("p5canvas");
+  frameRate(10);
+  for (let i = 0; i < 5; i++) {
+    worms.push(new Worm());
   }
-
-  //initialize `currentPlayer` to random player from `players` array
-  currentPlayer = players[Math.floor(Math.random()*players.length)];
 }
 
 function draw() {
-  background(220);
-  drawGrid();
-  drawPlayers();
-  checkWinner();
-  if(gameOver){
+  if (!gameOver) {
+    background(220);
+    fill("#005000");
+    textSize(20);
+    text(`Score: ${score}`, 20, 30);
+    for (let i = 0; i < worms.length; i++) {
+      worms[i].show();
+      worms[i].move();
+      if (worms[i].offScreen()) {
+        worms[i].reset();
+        score -= 5;
+      }
+      if (worms[i].hit(mouseX, mouseY)) {
+        worms[i].reset();
+        score += 10;
+      }
+    }
+  } else {
+    fill("#FF0000");
     textSize(40);
-    textAlign(CENTER, CENTER);
-    text(resultText, width/2, height/2);
+    textAlign(CENTER);
+    text("GAME OVER", width / 2, height / 2);
+    textAlign(LEFT);
   }
 }
 
-function drawGrid(){
-  strokeWeight(4);
-  line(width/3, 0, width/3, height);
-  line(width/3*2, 0, width/3*2, height);
-  line(0, height/3, width, height/3);
-  line(0, height/3*2, width, height/3*2);
-}
-
-//draw the Xs and Os on the game grid
-function drawPlayers(){
-  textSize(60);
-  textAlign(CENTER, CENTER);
-  let offset = width/6;
-  for(let i=0; i<3; i++){
-    for(let j=0; j<3; j++){
-      let x = j*width/3 + offset;
-      let y = i*height/3 + offset;
-      if(grid[i][j] === players[0]){
-        fill(0);
-        text(grid[i][j], x, y);
-      } else if(grid[i][j] === players[1]){
-        fill(255);
-        text(grid[i][j], x, y);
-      }
+function mousePressed() {
+  if (gameOver) {
+    score = 0;
+    gameOver = false;
+    for (let i = 0; i < worms.length; i++) {
+      worms[i].reset();
     }
   }
 }
 
-//evaluate if players have won or if there's a tie game
-function checkWinner(){
-  for (let i = 0; i < 3; i++) {
-    if (grid[i][0] === grid[i][1] && grid[i][1] === grid[i][2]) {
-      if(grid[i][0] !== ''){
-        resultText = `${grid[i][0]} wins!`;
-        gameOver = true;
-        return;
-      }
-    }
-    if (grid[0][i] === grid[1][i] && grid[1][i] === grid[2][i]) {
-      if(grid[0][i] !== ''){
-        resultText = `${grid[0][i]} wins!`;
-        gameOver = true;
-        return;
-      }
-    }
+class Worm {
+  constructor() {
+    this.x = random(width);
+    this.y = random(height);
+    this.diameter = random(20, 50);
+    this.speedX = random(-5, 5);
+    this.speedY = random(-5, 5);
   }
-  if (grid[0][0] === grid[1][1] && grid[1][1] === grid[2][2]) {
-    if(grid[0][0] !== ''){
-      resultText = `${grid[0][0]} wins!`;
-      gameOver = true;
-      return;
+
+  show() {
+    fill("#D3D3D3");
+    stroke("#808080");
+    strokeWeight(2);
+    ellipse(this.x, this.y, this.diameter, this.diameter);
+  }
+
+  move() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+  }
+
+  offScreen() {
+    if (this.x < -this.diameter || this.x > width + this.diameter || this.y < -this.diameter || this.y > height + this.diameter) {
+      return true;
+    } else {
+      return false;
     }
   }
 
-  if (grid[0][2] === grid[1][1] && grid[1][1] === grid[2][0]) {
-    if(grid[0][2] !== ''){
-      resultText = `${grid[0][2]} wins!`;
-      gameOver = true;
-      return;
+  hit(x, y) {
+    let distance = dist(x, y, this.x, this.y);
+    if (distance < this.diameter / 2) {
+      return true;
+    } else {
+      return false;
     }
   }
 
-  if(grid.every(row => row.every(cell => cell !== ''))){
-    gameOver = true;
-    resultText = 'Game over';
+  reset() {
+    this.x = random(width);
+    this.y = random(height);
+    this.speedX = random(-5, 5);
+    this.speedY = random(-5, 5);
   }
 }

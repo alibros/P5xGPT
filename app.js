@@ -81,7 +81,30 @@ app.post('/generate-p5code', async (req, res) => {
     }
 });
 
-
+app.post('/save-p5code', (req, res) => {
+    const code = req.body.code;
+    const gameNameRegex = /(?:const|var|let)\s+gameName\s*=\s*['"`](.*?)['"`]\s*;/;
+    const match = code.match(gameNameRegex);
+  
+    if (match && match[1]) {
+      const gameName = match[1];
+      const filePath = path.join(__dirname, 'public/savedgames', `${gameName}.js`);
+  
+      fs.writeFile(filePath, code, (err) => {
+        if (err) {
+          console.error('Error saving the file:', err);
+          res.status(500).send('Error saving the file.');
+        } else {
+          console.log('File saved successfully:', filePath);
+          res.status(200).send('File saved successfully.');
+        }
+      });
+    } else {
+      console.error('Error: gameName not found in the code.');
+      res.status(400).send('Error: gameName not found in the code.');
+    }
+  });
+    
 
 app.post('/update-p5code', async (req, res) => {
     const code = req.body.code;
@@ -94,6 +117,19 @@ app.post('/update-p5code', async (req, res) => {
         res.status(500).json({ error: 'Failed to save P5 code.' });
     }
 });
+
+
+app.get('/list-saved-games', (req, res) => {
+    const savedGamesDir = path.join(__dirname, 'public/savedgames');
+    fs.readdir(savedGamesDir, (err, files) => {
+      if (err) {
+        console.error('Error reading the directory:', err);
+        res.status(500).send('Error reading the directory.');
+      } else {
+        res.status(200).json(files);
+      }
+    });
+  });
 
 function saveP5CodeToFile(code, name) {
     const filePath = path.join(__dirname, 'public/scripts', `${name}.js`);
