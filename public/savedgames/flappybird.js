@@ -1,3 +1,6 @@
+const gameName="Flappy Bird"
+
+
 let birdImage;
 let bird, pipes = [];
 let cloud = [];

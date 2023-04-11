@@ -63,7 +63,6 @@ async function loadGame(gameName) {
     if (response.ok) {
       const code = await response.text();
       editor.setValue(code, -1);
-
       // Programmatically click the "update" button after loading the saved game
       const updateButton = document.getElementById("update-button");
       updateButton.click();
@@ -74,5 +73,8 @@ async function loadGame(gameName) {
     console.error('Error:', error);
   }
 }
+
+
+
 
 fetchSavedGames();

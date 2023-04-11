@@ -60,6 +60,14 @@
     color: #aaa;
   }
 
+  #game-name-display {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+  
+
   #prompt-form button:hover {
     background-color: #45a049;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
