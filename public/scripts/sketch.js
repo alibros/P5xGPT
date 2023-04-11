@@ -1,56 +1,127 @@
-const gameName = "blankcanvas";
-const canvasWidth = 600;
-const canvasHeight = 600;
+const gameName = "crazyballs";
 
-let ballX;
-let ballY;
-let ballSize;
-let squareSize = 100;
-let squareX = canvasWidth - squareSize;
-let squareY = 0;
+const gameInstructions = "Move your mouse around to collect the green balls while avoiding the red balls. You have 30 seconds to collect as many green balls as possible.";
+
+let greenBalls = [];
+let redBalls = [];
+let score = 0;
+let timeLeft = 30;
 
 function setup() {
-  let cnv = createCanvas(canvasWidth, canvasHeight);
-  cnv.parent("p5canvas");
-
-  ballX = width / 2;
-  ballY = height / 2;
-  ballSize = 50;
+  const canvas = createCanvas(600, 600).parent("p5canvas");
+  canvas.mouseMoved(movePlayer);
+  
+  spawnBalls();
+  
+  setInterval(countDown, 1000);
 }
 
 function draw() {
-  background(128, 0, 0); // Change the background color to dark red
-  fill(0, 0, 255);
-  ellipse(ballX, ballY, ballSize, ballSize);
+  background(220);
+  
+  moveBalls();
+  
+  displayBalls(greenBalls, color(50, 200, 50));
+  displayBalls(redBalls, color(200, 50, 50));
+  
+  displayScore();
+  displayTimer();
+  
+  checkCollisions();
+}
 
-  // Replace gray square with green square
-  fill(0, 255, 0);
-  rect(squareX, squareY, squareSize, squareSize);
+function movePlayer() {
+  player.x = mouseX;
+  player.y = mouseY;
+}
 
-  // Check for collision between ball and square
-  if (ballX + ballSize / 2 >= squareX && ballX - ballSize / 2 <= squareX + squareSize &&
-      ballY + ballSize / 2 >= squareY && ballY - ballSize / 2 <= squareY + squareSize) {
-    alert("You win!"); // Display message if ball touches square
-    resetGame();
+function spawnBalls() {
+  for (let i = 0; i < 20; i++) {
+    greenBalls.push(createRandomBall(20, color(50, 200, 50)));
   }
   
-  if (keyIsDown(RIGHT_ARROW)) {
-    ballX += 5;
-  }
-  if (keyIsDown(LEFT_ARROW)) {
-    ballX -= 5;
-  }
-  if (keyIsDown(UP_ARROW)) {
-    ballY -= 5;
-  }
-  if (keyIsDown(DOWN_ARROW)) {
-    ballY += 5;
+  for (let i = 0; i < 5; i++) {
+    redBalls.push(createRandomBall(30, color(200, 50, 50)));
   }
 }
 
-function resetGame() {
-  ballX = width / 2;
-  ballY = height / 2;
+function createRandomBall(size, color) {
+  return {
+    x: random(size, width-size),
+    y: random(size, height-size),
+    size: size,
+    color: color
+  }
 }
 
-const gameInstructions = 'Use the arrow keys to move the blue ball on the dark red background. Try to touch the green square to win.';
+function displayBalls(ballArray, color) {
+  fill(color);
+  noStroke();
+  ballArray.forEach(ball => {
+    ellipse(ball.x, ball.y, ball.size);
+  });
+}
+
+function moveBalls() {
+  greenBalls.forEach(ball => {
+    ball.x += random(-3, 3);
+    ball.y += random(-3, 3);
+    ball.x = constrain(ball.x, ball.size/2, width-ball.size/2);
+    ball.y = constrain(ball.y, ball.size/2, height-ball.size/2);
+  });
+  
+  redBalls.forEach(ball => {
+    ball.x += random(-5, 5);
+    ball.y += random(-5, 5);
+    ball.x = constrain(ball.x, ball.size/2, width-ball.size/2);
+    ball.y = constrain(ball.y, ball.size/2, height-ball.size/2);
+  });
+}
+
+function checkCollisions() {
+  greenBalls.forEach(ball => {
+    const d = dist(ball.x, ball.y, player.x, player.y);
+    if (d < ball.size/2 + 10) {
+      greenBalls = greenBalls.filter(b => b !== ball);
+      score++;
+    }
+  });
+  
+  redBalls.forEach(ball => {
+    const d = dist(ball.x, ball.y, player.x, player.y);
+    if (d < ball.size/2 + 10) {
+      redBalls = redBalls.filter(b => b !== ball);
+      score--;
+    }
+  });
+}
+
+function displayScore() {
+  textAlign(LEFT, TOP);
+  textSize(32);
+  fill(0);
+  text(`Score: ${score}`, 10, 10);
+}
+
+function displayTimer() {
+  textAlign(RIGHT, TOP);
+  textSize(32);
+  fill(0);
+  text(`Time Left: ${timeLeft}`, width-10, 10);
+}
+
+function countDown() {
+  timeLeft--;
+  if (timeLeft <= 0) {
+    endGame();
+  }
+}
+
+function endGame() {
+  alert(`Game over! Score: ${score}`);
+  greenBalls = [];
+  redBalls = [];
+  score = 0;
+  timeLeft = 30;
+  spawnBalls();
+}

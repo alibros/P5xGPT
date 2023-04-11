@@ -95,6 +95,7 @@ editor.commands.addCommand({
       })
       .then(response => {
         console.log('Code saved successfully:', response);
+        location.reload();
         alert('Code saved successfully.');
       })
       .catch(error => {

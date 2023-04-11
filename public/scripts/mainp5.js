@@ -30,6 +30,8 @@ p5Form.addEventListener('submit', async (event) => {
       const { code } = await response.json();
       location.reload();
     } else {
+      //log to browser console for debugging
+      print("error");
       console.error('Failed to generate P5 code.');
     }
   } catch (error) {

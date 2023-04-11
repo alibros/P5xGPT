@@ -48,8 +48,7 @@ app.post('/generate-p5code', async (req, res) => {
 
     }
     console.log(requestPrompt);
-  
-    console.log(process.env.OPENAI_API_KEY);
+//    console.log(process.env.OPENAI_API_KEY);
 
     const data = {
       model: 'gpt-3.5-turbo',
@@ -67,8 +66,13 @@ app.post('/generate-p5code', async (req, res) => {
         
       const generatedCode = response.data.choices[0].message.content.trim();
       const cleanCode = getCodeFromGPTOutput(generatedCode);
-      await saveP5CodeToFile(cleanCode, "sketch");
-      res.json({ code: cleanCode, prompt: prompt });
+      if (cleanCode == null) {
+      res.status(500).json({ error: generatedCode });
+     } else {
+        await saveP5CodeToFile(cleanCode, "sketch");
+        res.json({ code: cleanCode, prompt: prompt });
+     }
+     
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to generate P5 code.' });
@@ -145,7 +149,7 @@ function getCodeFromGPTOutput(str) {
     const endIndex = str.indexOf(end);
   
     if (startIndex === -1 || endIndex === -1) {
-      return '';
+      return null;
     }
   
     return str.substring(startIndex + start.length, endIndex).trim();
